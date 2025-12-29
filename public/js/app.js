@@ -523,5 +523,11 @@ const app = {
   },
 };
 
+// Mobile Menu Toggle
+window.toggleMenu = () => {
+  const navLinks = document.querySelector(".nav-links");
+  navLinks.classList.toggle("active");
+};
+
 // Start
 document.addEventListener("DOMContentLoaded", app.init);
