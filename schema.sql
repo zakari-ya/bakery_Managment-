@@ -43,3 +43,17 @@ CREATE TABLE IF NOT EXISTS ratings (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, bakery_id)
 );
+
+-- Scraped Leads Table (for n8n workflow)
+CREATE TABLE IF NOT EXISTS scraped_leads (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255),
+    email VARCHAR(255),
+    address TEXT,
+    instagram VARCHAR(255),
+    website TEXT,
+    rating DECIMAL(3, 2),
+    category VARCHAR(255),
+    phone VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

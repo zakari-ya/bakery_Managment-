@@ -10,14 +10,13 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [250, 300],
-      "webhookId": "my-workflow"
+      "position": [1000, 300],
+      "webhookId": "my-workflow",
+      "id": "33e8e3a5-a102-4e50-872d-cea96ff17761"
     },
     {
       "parameters": {
         "url": "https://serpapi.com/search.json",
-        "method": "GET",
-        "responseFormat": "json",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -48,7 +47,21 @@
       "name": "SerpApi - Google Maps",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [450, 300]
+      "position": [1200, 300],
+      "id": "bd7f9d22-7344-4a4c-92fe-50da35cd8588"
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "sheetId": "YOUR_GOOGLE_SHEET_ID_HERE",
+        "range": "A2:Z",
+        "options": {}
+      },
+      "name": "Clear Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [1400, 300],
+      "id": "clear-sheet-node"
     },
     {
       "parameters": {
@@ -58,7 +71,18 @@
       "name": "Split Results",
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 1,
-      "position": [650, 300]
+      "position": [1600, 300],
+      "id": "4c7f7cb6-82ad-4aac-9d54-00093231debc"
+    },
+    {
+      "parameters": {
+        "maxItems": "={{ $node[\"Webhook\"].json[\"body\"][\"max_leads\"] }}"
+      },
+      "name": "Limit",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [1800, 300],
+      "id": "limit-node"
     },
     {
       "parameters": {
@@ -71,7 +95,7 @@
             },
             {
               "name": "Email",
-              "value": "N/A"
+              "value": "={{$json[\"email\"] || undefined}}"
             },
             {
               "name": "Address",
@@ -79,15 +103,15 @@
             },
             {
               "name": "Instagram",
-              "value": "N/A"
+              "value": "={{$json[\"Instagram\"] || undefined}}"
             },
             {
               "name": "Website",
-              "value": "={{$json[\"website\"]}}"
+              "value": "={{$json[\"website\"] || null}}"
             },
             {
               "name": "Rating",
-              "value": "={{$json[\"rating\"]}}"
+              "value": "={{$json[\"rating\"] || null}}"
             },
             {
               "name": "Category",
@@ -95,15 +119,17 @@
             },
             {
               "name": "Phone",
-              "value": "={{$json[\"phone\"]}}"
+              "value": "={{$json[\"phone\"] || null}}"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "name": "Format Data",
       "type": "n8n-nodes-base.set",
       "typeVersion": 1,
-      "position": [850, 300]
+      "position": [2000, 300],
+      "id": "dff8ffcc-13a7-4f02-8622-5ca1ff899f3f"
     },
     {
       "parameters": {
@@ -115,7 +141,67 @@
       "name": "Google Sheets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 1,
-      "position": [1050, 300]
+      "position": [2200, 300],
+      "id": "aac87a7b-42cf-41c6-aff1-0e958ce7cdc4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tLXcVnYpgrvZvXew",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "scraped_leads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{$json[\"Name\"]}}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{$json[\"Email\"]}}"
+            },
+            {
+              "fieldId": "address",
+              "fieldValue": "={{$json[\"Address\"]}}"
+            },
+            {
+              "fieldId": "instagram",
+              "fieldValue": "={{$json[\"Instagram\"]}}"
+            },
+            {
+              "fieldId": "website",
+              "fieldValue": "={{$json[\"Website\"]}}"
+            },
+            {
+              "fieldId": "rating",
+              "fieldValue": "={{$json[\"Rating\"]}}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{$json[\"Category\"]}}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{$json[\"Phone\"]}}"
+            }
+          ]
+        }
+      },
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2400, 300],
+      "id": "5c9197de-1319-4bc1-862b-ffdb4d8be0f0",
+      "credentials": {
+        "supabaseApi": {
+          "id": "BJRQCP4x86M9U2aa",
+          "name": "Supabase account 4"
+        }
+      }
     }
   ],
   "connections": {
@@ -134,6 +220,17 @@
       "main": [
         [
           {
+            "node": "Clear Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Sheet": {
+      "main": [
+        [
+          {
             "node": "Split Results",
             "type": "main",
             "index": 0
@@ -142,6 +239,17 @@
       ]
     },
     "Split Results": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
       "main": [
         [
           {
@@ -157,6 +265,17 @@
         [
           {
             "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
             "type": "main",
             "index": 0
           }

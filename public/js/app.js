@@ -231,7 +231,7 @@ const app = {
                 <button class="fav-btn ${
                   isFavView ? "active" : ""
                 }" onclick="app.toggleFavorite('${item.id}')">
-                    <li class="auth-only hidden"><a href="#" onclick="app.navigate('scraping')">Find More</a></li>
+                    <i class="fa-solid fa-heart"></i>
                 </button>
                 <div class="card-body">
                     <div class="card-meta">
