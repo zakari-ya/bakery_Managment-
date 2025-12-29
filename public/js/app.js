@@ -169,6 +169,7 @@ const app = {
   logout: () => {
     app.state.user = null;
     app.state.token = null;
+    app.state.favorites = []; // Clear favorites on logout
     localStorage.removeItem("token");
     app.updateUI();
     app.navigate("dashboard");
