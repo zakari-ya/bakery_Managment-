@@ -31,11 +31,9 @@ router.get("/", optionalAuth, async (req, res) => {
   try {
     let query = supabase.from("bakeries").select("*", { count: "exact" });
 
-    // Search
+    // Search - only by name (prefix matching from first letter)
     if (search) {
-      query = query.or(
-        `name.ilike.%${search}%,specialties.ilike.%${search}%,city.ilike.%${search}%`
-      );
+      query = query.ilike("name", `${search}%`);
     }
 
     // Filter
@@ -148,12 +146,10 @@ router.put("/:id", authMiddleware, async (req, res) => {
       return res.status(404).json({ success: false, message: "Not found" });
 
     if (existing.created_by !== req.user.id) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Not authorized to update this item",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to update this item",
+      });
     }
 
     const { data, error } = await supabase
@@ -188,12 +184,10 @@ router.delete("/:id", authMiddleware, async (req, res) => {
       return res.status(404).json({ success: false, message: "Not found" });
 
     if (existing.created_by !== req.user.id) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Not authorized to delete this item",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to delete this item",
+      });
     }
 
     const { error } = await supabase.from("bakeries").delete().eq("id", id);
