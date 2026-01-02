@@ -1,0 +1,213 @@
+{
+  "name": "Chatbot AI Agent (DeepSeek via OpenRouter) - Fixed",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "065b965a-0eff-4e5d-b7a9-c9cd445a383a",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        3280,
+        896
+      ],
+      "webhookId": "chat-webhook-id"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "efdbee7e-f7b4-45f0-985f-57fb3c387330",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        4256,
+        896
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }} ",
+        "options": {
+          "systemMessage": "You are a helpful assistant for a bakery management application."
+        }
+      },
+      "id": "bf3ea7e7-50f4-46c2-b0d4-c1bf663b0643",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        3600,
+        896
+      ]
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat-v3.1",
+        "options": {
+          "baseURL": "https://openrouter.ai/api/v1",
+          "temperature": 0.7
+        }
+      },
+      "id": "390a866a-7d1d-4193-8aa0-bedea7d13871",
+      "name": "DeepSeek (OpenRouter)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        3568,
+        1120
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "DciSqAXZtkdIQkmx",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.sessionId }}"
+      },
+      "id": "55dd58b6-c951-4082-a2e0-c81852ed7c0d",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        3712,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Configuration API Key\n\n**API Key**: `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`\n\n**Instructions**:\n1. Open the 'DeepSeek (OpenRouter)' node.\n2. Create a new Credential.\n3. Paste the API Key above.\n4. Ensure Base URL is `https://openrouter.ai/api/v1`.",
+        "height": 360,
+        "width": 300,
+        "color": 4
+      },
+      "id": "e8cea456-ec0d-4ab2-95f6-5c4b9fb66f4f",
+      "name": "API Key Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3200,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        3264,
+        688
+      ],
+      "id": "7996822b-7cd2-4b25-93c3-77c4a39cc1d7",
+      "name": "When chat message received",
+      "webhookId": "46ce8705-ae24-4209-b2d6-3b99a97f47d0"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the output from AI Agent\nconst aiOutput = $input.first().json.output;\n\n// Clean with smart formatting\nconst cleanedOutput = aiOutput\n  // First, unescape everything\n  .replace(/\\\\n/g, '\\n')\n  .replace(/\\\\t/g, '  ')\n  .replace(/\\\\\"/g, '\"')\n  .replace(/\\\\'/g, \"'\")\n  .replace(/\\\\\\\\/g, '\\\\')\n  \n  // Fix common formatting issues\n  .replace(/\\*\\*(.*?)\\*\\*/g, '$1')      // Remove bold but keep text\n  .replace(/\\*(.*?)\\*/g, '$1')          // Remove italic but keep text\n  \n  // Clean up spacing\n  .replace(/\\s*\\n\\s*/g, '\\n')          // Remove spaces around newlines\n  .replace(/\\n{3,}/g, '\\n\\n')          // Limit consecutive newlines to 2\n  \n  // Ensure proper spacing after punctuation\n  .replace(/([.!?])\\s*\\n/g, '$1\\n\\n')  // Add extra line after sentences\n  .replace(/([a-z])\\n([A-Z])/g, '$1 $2') // Fix sentences broken by newline\n  \n  // Final cleanup\n  .trim();\n\n// Return the cleaned output\nreturn [{\n  json: {\n    output: cleanedOutput,\n    originalOutput: aiOutput\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3952,
+        896
+      ],
+      "id": "10113c23-fdf6-4f0f-9f22-e3763faa5b21",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek (OpenRouter)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "389cac76-89f0-49d1-824b-0f9b7514c704",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6fba02c56f732391825a81b0d3eb33212632413b406e8a0f3fe5b1cfa7369a99"
+  },
+  "id": "JD1ZVz108OxxPvyl",
+  "tags": []
+}

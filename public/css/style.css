@@ -676,3 +676,168 @@ body {
         left: 15px;
     }
 }
+
+/* Chatbot Widget */
+.chat-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-family: 'Outfit', sans-serif;
+}
+
+.chat-toggle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+.chat-toggle-btn.active {
+    transform: rotate(45deg);
+}
+
+.chat-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    transform-origin: bottom right;
+}
+
+.chat-window.hidden {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+    pointer-events: none;
+    display: none;
+}
+
+.chat-header {
+    background: var(--primary);
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.chat-close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.chat-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+    color: var(--text-dark); /* Ensure text is visible in bubbles */
+}
+
+/* Ensure --text-dark is defined or fallback for light theme context inside chat */
+.chat-window {
+    color: #333; /* Local override for chat text base */
+}
+
+.message.bot {
+    align-self: flex-start;
+    background: white;
+    color: #333;
+    border: 1px solid #eee;
+    border-bottom-left-radius: 2px;
+}
+
+.message.user {
+    align-self: flex-end;
+    background: var(--primary);
+    color: white;
+    border-bottom-right-radius: 2px;
+}
+
+.chat-input-area {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+    font-family: inherit;
+    background: white;
+    color: #333;
+}
+
+.chat-input-area input:focus {
+    border-color: var(--primary);
+}
+
+.chat-input-area button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.chat-input-area button:hover {
+    background: var(--primary-dark);
+    opacity: 0.9;
+}
+
+@media (max-width: 480px) {
+    .chat-window {
+        width: calc(100vw - 40px);
+        bottom: 90px;
+        right: 0;
+        height: 60vh;
+    }
+}
